@@ -14,6 +14,7 @@ import { addInvoice, updateInvoice } from "../redux/invoicesSlice";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import generateRandomId from "../utils/generateRandomId";
 import { useInvoiceListData } from "../redux/hooks";
+import ProductsTab from "./ProductsTab";
 
 const InvoiceForm = () => {
   const dispatch = useDispatch();
@@ -479,6 +480,7 @@ const InvoiceForm = () => {
             >
               Copy Old Invoice
             </Button>
+            <ProductsTab/>
           </div>
         </Col>
       </Row>
