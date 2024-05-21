@@ -11,11 +11,21 @@ const invoicesSlice = createSlice({
       return state.filter((invoice) => invoice.id !== action.payload);
     },
     updateInvoice: (state, action) => {
+      console.log("updateInvoice reducer called with:", action.payload);
+      console.log(action.payload.id);
+      
+      const idToUpdate = Number(action.payload.id);
       const index = state.findIndex(
-        (invoice) => invoice.id === action.payload.id
+        (invoice) => invoice.id === idToUpdate
       );
+      console.log(index);
+      
       if (index !== -1) {
-        state[index] = action.payload.updatedInvoice;
+        state[index] = {
+          ...state[index],
+          ...action.payload.updatedInvoice,
+        };
+        console.log("Updated invoice:", state[index]);
       }
     },
   },
