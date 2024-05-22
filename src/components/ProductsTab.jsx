@@ -6,7 +6,7 @@ import InvoiceModal from "../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
 import { useDispatch } from "react-redux";
-import { deleteItem } from "../redux/invoicesSlice";
+import { addItemToForm, deleteItem } from "../redux/invoicesSlice";
 import { GrAddCircle } from "react-icons/gr";
 
 const ProductsTab = () => {
@@ -72,9 +72,10 @@ const ItemRow = ({ item, navigate }) => {
     dispatch(deleteItem({ invoiceId: item.invoiceId, itemId: item.itemId }));
   };
 
-  const handleEditClick = () => {
-    navigate(`/edit/${item.invoiceId}`);
-  };
+  const handleAddClick = () => {
+    dispatch(addItemToForm({ invoiceId: item.invoiceId, newItem: item }));
+    /* console.log({ invoiceId: item.invoiceId, newItem: item }); */
+  }
 
   const openModal = (event) => {
     event.preventDefault();
@@ -94,7 +95,7 @@ const ItemRow = ({ item, navigate }) => {
         {item.itemPrice}
       </td>
       <td style={{ width: "5%" }}>
-        <Button variant="outline" onClick={handleEditClick}>
+        <Button variant="outline" onClick={handleAddClick}>
           <div className="d-flex align-items-center justify-content-center gap-2">
             <GrAddCircle />
           </div>

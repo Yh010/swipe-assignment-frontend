@@ -35,6 +35,13 @@ const invoicesSlice = createSlice({
         console.log("Updated invoice:", state[index]);
       }
     },
+    addItemToForm: (state, action) => {
+      const { invoiceId, newItem } = action.payload;
+      const invoice = state.find(invoice => invoice.id === invoiceId);
+      if (invoice) {
+        invoice.items.push(newItem);
+      }
+    }
   },
 });
 
@@ -42,7 +49,8 @@ export const {
   addInvoice,
   deleteInvoice,
   updateInvoice,
-  deleteItem
+  deleteItem,
+  addItemToForm
 } = invoicesSlice.actions;
 
 export const selectInvoiceList = (state) => state.invoices;
