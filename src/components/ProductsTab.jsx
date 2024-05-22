@@ -1,12 +1,13 @@
 import React, { useState } from "react";
 import { Button, Card, Col, Row, Table } from "react-bootstrap";
-import { BiSolidPencil, BiTrash } from "react-icons/bi";
+import { BiTrash } from "react-icons/bi";
 import { BsEyeFill } from "react-icons/bs";
 import InvoiceModal from "../components/InvoiceModal";
 import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
 import { useDispatch } from "react-redux";
-import { deleteInvoice } from "../redux/invoicesSlice";
+import { deleteItem } from "../redux/invoicesSlice";
+import { GrAddCircle } from "react-icons/gr";
 
 const ProductsTab = () => {
   const { invoiceList } = useInvoiceListData();
@@ -26,7 +27,7 @@ const ProductsTab = () => {
   return (
     <Row>
       <Col className="mx-auto" xs={12} md={8} lg={9}>
-        <Card className="d-flex p-3 p-md-4 my-3 my-md-4">
+        <Card className="d-flex p-3 p-md-4 my-3 my-md-4" style={{ width: '100%' }}>
           {isListEmpty ? (
             <div className="d-flex flex-column align-items-center">
               <h3 className="fw-bold pb-2 pb-md-4">No invoices present</h3>
@@ -67,8 +68,8 @@ const ItemRow = ({ item, navigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
 
-  const handleDeleteClick = (invoiceId) => {
-    dispatch(deleteInvoice(invoiceId));
+  const handleDeleteClick = () => {
+    dispatch(deleteItem({ invoiceId: item.invoiceId, itemId: item.itemId }));
   };
 
   const handleEditClick = () => {
@@ -93,14 +94,14 @@ const ItemRow = ({ item, navigate }) => {
         {item.itemPrice}
       </td>
       <td style={{ width: "5%" }}>
-        <Button variant="outline-primary" onClick={handleEditClick}>
+        <Button variant="outline" onClick={handleEditClick}>
           <div className="d-flex align-items-center justify-content-center gap-2">
-            <BiSolidPencil />
+            <GrAddCircle />
           </div>
         </Button>
       </td>
       <td style={{ width: "5%" }}>
-        <Button variant="danger" onClick={() => handleDeleteClick(item.invoiceId)}>
+        <Button variant="danger" onClick={handleDeleteClick}>
           <div className="d-flex align-items-center justify-content-center gap-2">
             <BiTrash />
           </div>
@@ -120,7 +121,7 @@ const ItemRow = ({ item, navigate }) => {
           isOpen,
           id: item.invoiceId,
           currency: item.currency,
-          currentDate: "", 
+          currentDate: "", // Add other necessary fields if required
           invoiceNumber: item.invoiceNumber,
           dateOfIssue: "",
           billTo: "",

@@ -10,6 +10,13 @@ const invoicesSlice = createSlice({
     deleteInvoice: (state, action) => {
       return state.filter((invoice) => invoice.id !== action.payload);
     },
+    deleteItem(state, action) {
+      const { invoiceId, itemId } = action.payload;
+      const invoice = state.find(invoice => invoice.id === invoiceId);
+      if (invoice) {
+        invoice.items = invoice.items.filter(item => item.itemId !== itemId);
+      }
+    },
     updateInvoice: (state, action) => {
       console.log("updateInvoice reducer called with:", action.payload);
       console.log(action.payload.id);
@@ -35,6 +42,7 @@ export const {
   addInvoice,
   deleteInvoice,
   updateInvoice,
+  deleteItem
 } = invoicesSlice.actions;
 
 export const selectInvoiceList = (state) => state.invoices;
