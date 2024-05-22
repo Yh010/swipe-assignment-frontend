@@ -9,15 +9,23 @@ import { useDispatch } from "react-redux";
 import { deleteInvoice } from "../redux/invoicesSlice";
 
 const ProductsTab = () => {
-  const { invoiceList, getOneInvoice } = useInvoiceListData();
+  const { invoiceList } = useInvoiceListData();
   const isListEmpty = invoiceList.length === 0;
   const navigate = useNavigate();
-  
+
+  // Flatten the items from all invoices
+  const allItems = invoiceList.flatMap(invoice => 
+    invoice.items.map(item => ({
+      ...item,
+      invoiceNumber: invoice.invoiceNumber,
+      currency: invoice.currency,
+      invoiceId: invoice.id,
+    }))
+  );
 
   return (
     <Row>
       <Col className="mx-auto" xs={12} md={8} lg={9}>
-        
         <Card className="d-flex p-3 p-md-4 my-3 my-md-4">
           {isListEmpty ? (
             <div className="d-flex flex-column align-items-center">
@@ -32,17 +40,16 @@ const ProductsTab = () => {
                 <thead>
                   <tr>
                     <th>Invoice No.</th>
-                    <th>Bill To</th>
-                    <th>Due Date</th>
-                    <th>Total Amt.</th>
+                    <th>Item Name</th>
+                    <th>Item Price</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
-                  {invoiceList.map((invoice) => (
-                    <InvoiceRow
-                      key={invoice.id}
-                      invoice={invoice}
+                  {allItems.map((item) => (
+                    <ItemRow
+                      key={item.itemId}
+                      item={item}
                       navigate={navigate}
                     />
                   ))}
@@ -56,7 +63,7 @@ const ProductsTab = () => {
   );
 };
 
-const InvoiceRow = ({ invoice, navigate }) => {
+const ItemRow = ({ item, navigate }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dispatch = useDispatch();
 
@@ -65,7 +72,7 @@ const InvoiceRow = ({ invoice, navigate }) => {
   };
 
   const handleEditClick = () => {
-    navigate(`/edit/${invoice.id}`);
+    navigate(`/edit/${item.invoiceId}`);
   };
 
   const openModal = (event) => {
@@ -79,12 +86,11 @@ const InvoiceRow = ({ invoice, navigate }) => {
 
   return (
     <tr>
-      <td>{invoice.invoiceNumber}</td>
-      <td className="fw-normal">{invoice.billTo}</td>
-      <td className="fw-normal">{invoice.dateOfIssue}</td>
+      <td>{item.invoiceNumber}</td>
+      <td className="fw-normal">{item.itemName}</td>
       <td className="fw-normal">
-        {invoice.currency}
-        {invoice.total}
+        {item.currency}
+        {item.itemPrice}
       </td>
       <td style={{ width: "5%" }}>
         <Button variant="outline-primary" onClick={handleEditClick}>
@@ -94,7 +100,7 @@ const InvoiceRow = ({ invoice, navigate }) => {
         </Button>
       </td>
       <td style={{ width: "5%" }}>
-        <Button variant="danger" onClick={() => handleDeleteClick(invoice.id)}>
+        <Button variant="danger" onClick={() => handleDeleteClick(item.invoiceId)}>
           <div className="d-flex align-items-center justify-content-center gap-2">
             <BiTrash />
           </div>
@@ -112,31 +118,31 @@ const InvoiceRow = ({ invoice, navigate }) => {
         closeModal={closeModal}
         info={{
           isOpen,
-          id: invoice.id,
-          currency: invoice.currency,
-          currentDate: invoice.currentDate,
-          invoiceNumber: invoice.invoiceNumber,
-          dateOfIssue: invoice.dateOfIssue,
-          billTo: invoice.billTo,
-          billToEmail: invoice.billToEmail,
-          billToAddress: invoice.billToAddress,
-          billFrom: invoice.billFrom,
-          billFromEmail: invoice.billFromEmail,
-          billFromAddress: invoice.billFromAddress,
-          notes: invoice.notes,
-          total: invoice.total,
-          subTotal: invoice.subTotal,
-          taxRate: invoice.taxRate,
-          taxAmount: invoice.taxAmount,
-          discountRate: invoice.discountRate,
-          discountAmount: invoice.discountAmount,
+          id: item.invoiceId,
+          currency: item.currency,
+          currentDate: "", 
+          invoiceNumber: item.invoiceNumber,
+          dateOfIssue: "",
+          billTo: "",
+          billToEmail: "",
+          billToAddress: "",
+          billFrom: "",
+          billFromEmail: "",
+          billFromAddress: "",
+          notes: "",
+          total: "",
+          subTotal: "",
+          taxRate: "",
+          taxAmount: "",
+          discountRate: "",
+          discountAmount: "",
         }}
-        items={invoice.items}
-        currency={invoice.currency}
-        subTotal={invoice.subTotal}
-        taxAmount={invoice.taxAmount}
-        discountAmount={invoice.discountAmount}
-        total={invoice.total}
+        items={[item]}
+        currency={item.currency}
+        subTotal={""}
+        taxAmount={""}
+        discountAmount={""}
+        total={item.itemPrice}
       />
     </tr>
   );
