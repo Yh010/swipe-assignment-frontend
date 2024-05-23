@@ -7,14 +7,12 @@ import { useNavigate } from "react-router-dom";
 import { useInvoiceListData } from "../redux/hooks";
 import { useDispatch } from "react-redux";
 import { addItemToForm, deleteItem } from "../redux/invoicesSlice";
-import { GrAddCircle } from "react-icons/gr";
 
 const ProductsTab = () => {
   const { invoiceList } = useInvoiceListData();
   const isListEmpty = invoiceList.length === 0;
   const navigate = useNavigate();
 
-  // Flatten the items from all invoices
   const allItems = invoiceList.flatMap(invoice => 
     invoice.items.map(item => ({
       ...item,
@@ -72,10 +70,6 @@ const ItemRow = ({ item, navigate }) => {
     dispatch(deleteItem({ invoiceId: item.invoiceId, itemId: item.itemId }));
   };
 
-  const handleAddClick = () => {
-    dispatch(addItemToForm({ invoiceId: item.invoiceId, newItem: item }));
-    /* console.log({ invoiceId: item.invoiceId, newItem: item }); */
-  }
 
   const openModal = (event) => {
     event.preventDefault();
@@ -94,13 +88,7 @@ const ItemRow = ({ item, navigate }) => {
         {item.currency}
         {item.itemPrice}
       </td>
-      <td style={{ width: "5%" }}>
-        <Button variant="outline" onClick={handleAddClick}>
-          <div className="d-flex align-items-center justify-content-center gap-2">
-            <GrAddCircle />
-          </div>
-        </Button>
-      </td>
+      
       <td style={{ width: "5%" }}>
         <Button variant="danger" onClick={handleDeleteClick}>
           <div className="d-flex align-items-center justify-content-center gap-2">
@@ -122,7 +110,7 @@ const ItemRow = ({ item, navigate }) => {
           isOpen,
           id: item.invoiceId,
           currency: item.currency,
-          currentDate: "", // Add other necessary fields if required
+          currentDate: "", 
           invoiceNumber: item.invoiceNumber,
           dateOfIssue: "",
           billTo: "",

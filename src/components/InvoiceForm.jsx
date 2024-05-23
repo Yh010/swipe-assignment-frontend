@@ -9,12 +9,13 @@ import InvoiceItem from "./InvoiceItem";
 import InvoiceModal from "./InvoiceModal";
 import { BiArrowBack } from "react-icons/bi";
 import InputGroup from "react-bootstrap/InputGroup";
-import { useDispatch, useSelector } from "react-redux";
-import { addInvoice, addItemToForm, updateInvoice } from "../redux/invoicesSlice";
+import { useDispatch,useSelector} from "react-redux";
+import { addInvoice,updateInvoice } from "../redux/invoicesSlice";
 import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
 import generateRandomId from "../utils/generateRandomId";
 import { useInvoiceListData } from "../redux/hooks";
 import ProductsTab from "./ProductsTab";
+import { fetchRates, selectRates, selectSelectedCurrency, setCurrency } from "../redux/currencySlice";
 
 const InvoiceForm = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,8 @@ const InvoiceForm = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [copyId, setCopyId] = useState("");
   const { getOneInvoice, listSize } = useInvoiceListData();
+  const [oldCurrency, setOldCurrency] = useState(""); 
+  const [newCurrency, setNewCurrency] = useState("");
   const [formData, setFormData] = useState(
   isEdit
     ? getOneInvoice(params.id)
@@ -66,6 +69,7 @@ const InvoiceForm = () => {
       }
 );
 
+  /* TODO: OnCLick + icon => add item to invoice item list */
 /* const itemsfromProdTab = useSelector(addItemToForm);
 useEffect(() => {
   setFormData(prevFormData => ({
@@ -160,8 +164,32 @@ useEffect(() => {
     handleCalculateTotal();
   };
 
+  const rates = useSelector(selectRates);
+
+  useEffect(() => {
+    dispatch(fetchRates());
+  }, [dispatch]);
+  
   const onCurrencyChange = (selectedOption) => {
+    const oldCurr = formData.currency; 
+    setOldCurrency(oldCurr); 
+    console.log({ name: "old curr", value: oldCurr });
+
     setFormData({ ...formData, currency: selectedOption.currency });
+    dispatch(setCurrency(selectedOption.currency));
+    const newCurr = selectedOption.currency;
+    setNewCurrency(newCurr); 
+    console.log({ name: "new curr", value: newCurr });
+     console.log(rates); 
+  };
+
+
+  const convertCurrency = (amount, fromCurrency, toCurrency) => {
+    if (fromCurrency === toCurrency) {
+      return amount;
+    }
+    const rate = rates[toCurrency] / rates[fromCurrency];
+     return (amount * rate).toFixed(2);   
   };
 
   const openModal = (event) => {
@@ -327,6 +355,9 @@ useEffect(() => {
               onRowDel={handleRowDel}
               currency={formData.currency}
               items={formData.items}
+              convertCurrency={convertCurrency}
+              oldCurrency={oldCurrency}
+              newCurrency={newCurrency}
             />
             <Row className="mt-4 justify-content-end">
               <Col lg={6}>
@@ -433,14 +464,14 @@ useEffect(() => {
                 className="btn btn-light my-1"
                 aria-label="Change Currency"
               >
-                <option value="$">USD (United States Dollar)</option>
-                <option value="£">GBP (British Pound Sterling)</option>
-                <option value="¥">JPY (Japanese Yen)</option>
-                <option value="$">CAD (Canadian Dollar)</option>
-                <option value="$">AUD (Australian Dollar)</option>
-                <option value="$">SGD (Singapore Dollar)</option>
-                <option value="¥">CNY (Chinese Renminbi)</option>
-                <option value="₿">BTC (Bitcoin)</option>
+                <option value="USD">USD (United States Dollar)</option>
+                <option value="GBP">GBP (British Pound Sterling)</option>
+                <option value="JPY">JPY (Japanese Yen)</option>
+                <option value="CAD">CAD (Canadian Dollar)</option>
+                <option value="AUD">AUD (Australian Dollar)</option>
+                <option value="SGD">SGD (Singapore Dollar)</option>
+                <option value="CNY">CNY (Chinese Renminbi)</option>
+                <option value="BTC">BTC (Bitcoin)</option>
               </Form.Select>
             </Form.Group>
             <Form.Group className="my-3">
